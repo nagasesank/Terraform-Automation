@@ -1,0 +1,37 @@
+---
+- name: Install Splunk on Fedora EC2 instance
+  hosts: all
+  become: yes
+  tasks:
+    - name: Ensure system is updated
+      dnf:
+        name: '*'
+        state: latest
+
+    - name: Download Splunk
+      get_url:
+        url: 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=linux&version=9.1.0.1&product=splunk&filename=splunk-9.1.0.1-77f73c9edb85-Linux-x86_64.tgz&wget=true'
+        dest: '/tmp/splunk.tgz'
+        mode: '0755'
+
+    - name: Extract Splunk
+      unarchive:
+        src: '/tmp/splunk.tgz'
+        dest: '/opt/'
+        remote_src: yes
+        extra_opts: ['--strip-components=1']
+
+    - name: Start Splunk for the first time and accept the license
+      command: '/opt/splunk/bin/splunk start --accept-license'
+      become: yes
+      become_method: sudo
+      args:
+        creates: '/opt/splunk/firstrun'
+
+    - name: Enable Splunk boot-start
+      command: '/opt/splunk/bin/splunk enable boot-start'
+      become: yes
+      become_method: sudo
+      args:
+        creates: '/etc/init.d/splunk'
+

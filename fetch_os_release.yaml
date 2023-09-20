@@ -1,0 +1,13 @@
+---
+- name: Fetch os-release info from EC2
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Get os-release content
+      command: cat /etc/os-release
+      register: os_release_info
+
+    - name: Display os-release content
+      debug:
+        msg: "{{ os_release_info.stdout_lines }}"
