@@ -16,7 +16,7 @@ def create_ansible_inventory(tf_output):
             "hosts": [ip],
             "vars": {
                 "ansible_ssh_user": "ec2-user",
-                "ansible_ssh_private_key_file": "/home/surya/Documents/terraform/terraform1/ec2-user.pem"
+                "ansible_ssh_private_key_file": "ec2-user.pem"
             }
         }
     }
