@@ -1,45 +1,114 @@
-# Automation Of AWS Using Terraform and Ansible using Python
-This repository provides tools and playbooks to automate [Terraform](https://www.terraform.io/) operations using [Ansible](https://www.ansible.com/).
+# Terraform Automation for AWS and Ansible
+
+This project demonstrates an end-to-end infrastructure automation workflow using Terraform, Ansible, and Python. It provisions an AWS EC2 instance, prepares dynamic inventory for Ansible, runs a configuration playbook, and then tears the infrastructure down.
 
 ## Overview
-With the combination of Terraform's infrastructure as code (IaC) and Ansible's configuration management capabilities, this repository aims to simplify and automate infrastructure provisioning and management tasks.
 
-## Features
+The repository is built as a simple automation pipeline:
 
-1. **Automated Infrastructure Deployment**: Use Ansible playbooks to execute Terraform plans and apply configurations.
-2. **State Management**: Handle Terraform state files securely.
-3. **Configuration**: Utilize Ansible's templating for dynamic Terraform configurations.
-4. **Validation & Testing**: Integrate with tools like tflint for configuration validation.
+1. Terraform initializes and creates AWS resources.
+2. A Python inventory script reads Terraform output.
+3. Ansible connects to the provisioned host and applies configuration.
+4. The Python orchestration script destroys the infrastructure after execution.
+
+This makes the project a useful example of combining infrastructure as code with configuration management in one workflow.
+
+## What This Project Does
+
+- Provisions an EC2 instance in AWS using Terraform
+- Creates a security group that allows SSH access
+- Generates inventory data for Ansible from Terraform output
+- Runs an Ansible playbook against the provisioned instance
+- Demonstrates short-lived infrastructure automation from one command
+
+## Tech Stack
+
+- Terraform
+- Ansible
+- Python 3
+- AWS EC2
+
+## Repository Structure
+
+```text
+.
+|-- auto_ec2.py          # Orchestrates terraform apply, ansible execution, and terraform destroy
+|-- main.tf              # Core Terraform resources for AWS infrastructure
+|-- outputs.tf           # Terraform outputs used by the inventory script
+|-- python.py            # Generates dynamic inventory from terraform output
+|-- playbook.yaml        # Ansible playbook executed against the EC2 instance
+|-- remote.tf            # SSH connection configuration example
+|-- varibales.tf         # Terraform variables used by the deployment
+`-- inventory.ini        # Generated local inventory file
+```
 
 ## Prerequisites
-1. [Terraform](https://www.terraform.io/) installed.
-2. [Ansible](https://www.ansible.com/). installed.
-3. Create *Access Key* and *Sceret key* from Your AWS Console Management. you can create here [AWS Console](https://portal.aws.amazon.com/billing/signup#/start/email)
-4. Create Public/Private key pair to make ssh to the **AWS Console**
-5. Create a *Playbook.yaml* file to run the configuration in the EC2 Instance.
-6. No Need to Create *inventory.ini* to ansible configuration file. It will automate the hosts that comes from the EC2 instance.
 
-## Installation
+Before running the project, make sure you have:
 
-- Clone this repository:
-   - git clone https://github.com/nagasesank/Terraform-Automation.git
-- Navigate to the project directory:
-   - cd Terraform_Ansible_Automation
+- [Terraform](https://developer.hashicorp.com/terraform/downloads) installed
+- [Ansible](https://docs.ansible.com/) installed
+- Python 3 installed
+- An AWS account with credentials configured locally
+- An EC2 key pair available for SSH access
+- The matching `.pem` file stored in the project directory
 
-## Note:
-* Before Going to run the script make sure you *.pem* file should be download into the same folder.
-* Make sure the permissions are proper for the *.pem* file.
+## Configuration
+
+Update the project to match your AWS environment before running it:
+
+- Review `main.tf` for region, AMI, instance type, and key pair name
+- Confirm the private key filename referenced in the Terraform and inventory files
+- Make sure your AWS credentials are configured with the permissions needed to create EC2 resources
+- Review `playbook.yaml` and adapt the software installation steps if needed
+
+## How It Works
+
+The main workflow lives in `auto_ec2.py`.
+
+- `terraform init` prepares the working directory
+- `terraform apply -auto-approve` provisions the infrastructure
+- `ansible-playbook -i python.py playbook.yaml` runs the Ansible playbook
+- `terraform destroy -auto-approve` removes the resources after the run
 
 ## Usage
-Make sure you've set up necessary authentication for Terraform providers (e.g., AWS CLI configured for AWS provider).
-1. **Set up Terraform variables**: Edit the *variables.tf* or respective variable files as per your infrastructure requirements.
-2. **Execute** the auto_ec2.py to run the file using the command
-<pre><code>$ python3 auto_ec2.py </code></pre>
 
+Clone the repository and move into the project directory:
 
-## References
-- [Medium Reference ](https://medium.com/geekculture/the-most-simplified-integration-of-ansible-and-terraform-49f130b9fc8)
-- Refer to individual playbook and script documentation for detailed usage and customization options.
+```bash
+git clone https://github.com/nagasesank/Terraform-Automation.git
+cd Terraform-Automation
+```
+
+Run the automation script:
+
+```bash
+python3 auto_ec2.py
+```
+
+## Example Use Case
+
+This repository is useful as a learning and portfolio project for:
+
+- automating AWS infrastructure provisioning
+- combining Terraform and Ansible in one workflow
+- demonstrating cloud automation skills in a practical setup
+- testing repeatable configuration changes on short-lived infrastructure
+
+## Notes
+
+- The current workflow destroys the infrastructure after the Ansible playbook completes
+- Review security group rules before using this in a wider environment
+- Avoid committing sensitive files such as private keys or real Terraform state in production projects
+
+## Improvements to Consider
+
+- Add variable validation and parameterization for AMI, region, and instance type
+- Move secrets handling to environment variables or secure secret storage
+- Add a `.gitignore` for Terraform state and private key files
+- Add screenshots or sample output for the provisioning workflow
+- Add GitHub Actions for linting or validation
 
 ## Contributing
-* Contributions, issues, and feature requests are welcome! For major changes, please open an issue first to discuss the proposed change.
+
+Contributions, issues, and suggestions are welcome. If you would like to improve the automation flow, documentation, or Terraform structure, feel free to open an issue or submit a pull request.
