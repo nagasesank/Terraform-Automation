@@ -1,0 +1,28 @@
+# Terraform working directory and state
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+crash.log
+crash.*.log
+
+# Local Terraform variables
+*.tfvars
+*.tfvars.json
+!*.tfvars.example
+
+# Credentials and local environment
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Local Ansible/runtime inventory
+inventory.local.ini
+
+# Python
+__pycache__/
+*.py[cod]
